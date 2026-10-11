@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS articles (
     guid         VARCHAR(255) NULL,             -- unique id from RSS, for dedup
     source_id    INT UNSIGNED NULL,
     source_site  VARCHAR(190) NULL,
+    category     VARCHAR(120) NULL,             -- topik dari RSS / AI (politik, ekonomi, dll)
     title        VARCHAR(500) NOT NULL,
     slug         VARCHAR(600) NOT NULL,
     excerpt      TEXT NULL,
@@ -71,6 +72,7 @@ CREATE TABLE IF NOT EXISTS articles (
     KEY idx_slug (slug),
     KEY idx_status_pub (status, published_at),
     KEY idx_lang (lang),
+    KEY idx_category (category),
     FULLTEXT KEY ft_title_body (title, body, excerpt)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

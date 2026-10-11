@@ -86,11 +86,11 @@ echo "Done. Processed $done new article(s).\n";
 // ===== Helper: insert draft =====
 function insert_article($item, $title, $slug) {
     $stmt = db()->prepare(
-        "INSERT INTO articles (guid, source_id, source_site, title, slug, lang, image, original_url, status)
-         VALUES (?,?,?,?,?,?,?,?,'draft')"
+        "INSERT INTO articles (guid, source_id, source_site, category, title, slug, lang, image, original_url, status)
+         VALUES (?,?,?,?,?,?,?,?,?,'draft')"
     );
     $stmt->execute([
-        $item['guid'], $item['source_id'], $item['source_site'], $title, $slug,
+        $item['guid'], $item['source_id'], $item['source_site'], $item['category'] ?? null, $title, $slug,
         $item['lang'], $item['image'], $item['link'],
     ]);
     return db()->lastInsertId();
@@ -102,9 +102,14 @@ function update_article_rewritten($articleId, $r, $item) {
     $body = body_to_html($r['body'] ?? '');
     $slug = slugify($r['title'] ?? $item['title']) . '-' . substr(md5($item['guid']), 0, 5);
 
+    // Taxonomy category: prefer AI-assigned, else RSS, else existing value
+    $category = trim((string)($r['category'] ?? '')) ?: trim((string)($item['category'] ?? '')) ?: null;
+    $category = $category ? mb_substr($category, 0, 120) : null;
+
     $stmt = db()->prepare(
         "UPDATE articles SET
             title = ?, slug = ?, excerpt = ?, body = ?,
+            category = ?,
             meta_title = ?, meta_desc = ?, keywords = ?, tags = ?,
             image_alt = ?, faq_json = ?,
             status = 'published', published_at = NOW()
@@ -112,6 +117,7 @@ function update_article_rewritten($articleId, $r, $item) {
     );
     $stmt->execute([
         $r['title'], $slug, $r['excerpt'] ?? '', $body,
+        $category,
         $r['meta_title'] ?? $r['title'], $r['meta_description'] ?? '', trim($r['keywords'] ?? '', ", " ),
         is_array($r['tags'] ?? null) ? implode(',', $r['tags']) : ($r['tags'] ?? ''),
         $r['image_alt'] ?? '', $faq, $articleId,

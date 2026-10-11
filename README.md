@@ -22,6 +22,7 @@ cp includes/config.example.php includes/config.php   # lalu isi kredensial DB ka
 - **SEO Lengkap** — meta title/desc, keywords, slug, schema.org (NewsArticle + FAQPage + Breadcrumb), OpenGraph, Twitter Card, canonical, sitemap.xml, robots.txt
 - **Admin Panel** — login, ganti endpoint AI/model/key, kelola RSS, trigger manual, lihat statistik & log
 - **Tampilan Profesional** — responsive, clean, cepat (cache + lazy image)
+- **Kategori Topik Otomatis** — ambil `<category>` dari RSS, AI isi/tebak topik kalau RSS kosong, menu kategori + `related` berdasarkan kesamaan topik
 
 ## Struktur
 
@@ -58,6 +59,17 @@ assets/css/           -> style.css (frontend), admin.css
    - Mengisi setting default + 4 RSS sumber Indonesia
 5. **HAPUS `install.php`** setelah selesai!
 6. **Login Admin** di `https://domain-kamu/admin/` → ganti password.
+
+## Upgrade dari Versi Lama (kategori topik)
+
+Kalo kamu sudah install versi lama (sebelum fitur kategori ada), jalankan sekali dari CLI:
+
+```bash
+php cron/migrate.php      # nambah kolom `category` + index
+php cron/backfill_category.php   # isi kategori untuk artikel lama yang masih kosong
+```
+
+`backfill_category.php` pakai klasifikasi kata kunci offline (instan, gratis). Bisa preview dengan `--dry-run`.
 
 ## Konfigurasi AI (9Router)
 

@@ -61,12 +61,15 @@ JSON shape:
   "meta_title": "SEO title tag (max 60 chars)",
   "meta_description": "meta description (max 160 chars)",
   "keywords": "comma,seo,keywords",
+  "category": "topic category in {$langName}, e.g. Politik / Ekonomi / Olahraga / Teknologi / Hiburan / Internasional / Kesehatan / Nasional",
   "body": "full article markdown",
   "excerpt": "short intro teaser (max 160 chars)",
   "tags": ["tag1","tag2"],
   "image_alt": "descriptive alt text",
   "faqs": [{"q":"question","a":"answer"}]
 }
+
+Category rule: prefer the source category if the RSS already provides one; otherwise choose the single most relevant topic category yourself. Keep it short (1-2 words) and always in {$langName}.
 PROMPT;
 
     $user = json_encode([
@@ -74,6 +77,7 @@ PROMPT;
         'source_summary'     => mb_substr($item['description'] ?? '', 0, 1200),
         'publish_date'       => $item['date'] ?? null,
         'original_url'       => $item['link'] ?? '',
+        'source_category'    => $item['category'] ?? null,
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
     return ['system' => $system, 'user' => $user];

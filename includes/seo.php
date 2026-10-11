@@ -80,11 +80,12 @@ function site_schema() {
 }
 
 // ---- Find related articles (internal links) ----
-function related_articles($sourceSite, $excludeId, $limit = 4) {
-    $st = db()->prepare("SELECT id, slug, title, image FROM articles
-        WHERE status='published' AND id != ? AND source_site = ?
+function related_articles($sourceSite, $excludeId, $limit = 4, $category = null) {
+    $catKey = $category ?: $sourceSite;
+    $st = db()->prepare("SELECT id, slug, title, image, category, source_site FROM articles
+        WHERE status='published' AND id != ? AND category = ?
         ORDER BY published_at DESC LIMIT " . (int)$limit);
-    $st->execute([$excludeId, $sourceSite]);
+    $st->execute([$excludeId, $catKey]);
     return $st->fetchAll();
 }
 

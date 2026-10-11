@@ -71,6 +71,10 @@ function site_head($title, $desc, $url, $image, $type = 'article', $extraSchema 
 function site_footer() {
     $siteName = setting('site_name', APP_NAME);
     $siteTag  = setting('site_tagline', '');
+    $cats = [];
+    try {
+        $cats = db()->query("SELECT DISTINCT category FROM articles WHERE status='published' AND category IS NOT NULL AND category <> '' ORDER BY category ASC")->fetchAll(PDO::FETCH_COLUMN);
+    } catch (Exception $e) { $cats = []; }
     ?>
 <footer>
     <div class="container">
@@ -84,6 +88,9 @@ function site_footer() {
                 <h4>Kategori</h4>
                 <ul class="foot-links">
                     <li><a href="/">Terkini</a></li>
+                    <?php if (is_array($cats)): foreach ($cats as $c): ?>
+                        <li><a href="/kategori/<?= e(slugify($c)) ?>"><?= e(str_replace('-', ' ', (string)$c)) ?></a></li>
+                    <?php endforeach; endif; ?>
                 </ul>
             </div>
         </div>
@@ -96,9 +103,19 @@ function site_footer() {
 
 function site_nav($search = true) {
     $siteName = setting('site_name', APP_NAME);
+    $cats = [];
+    try {
+        $cats = db()->query("SELECT DISTINCT category FROM articles WHERE status='published' AND category IS NOT NULL AND category <> '' ORDER BY category ASC")->fetchAll(PDO::FETCH_COLUMN);
+    } catch (Exception $e) { $cats = []; }
     ?>
 <nav class="nav"><div class="container nav-in">
     <a href="/" class="logo"><?= e($siteName) ?></a>
+    <div class="nav-cats">
+        <a href="/">Terkini</a>
+        <?php if (is_array($cats)): foreach ($cats as $c): ?>
+            <a href="/kategori/<?= e(slugify($c)) ?>"><?= e(str_replace('-', ' ', (string)$c)) ?></a>
+        <?php endforeach; endif; ?>
+    </div>
     <?php if ($search): ?><input type="search" class="search" placeholder="Cari berita..."><?php endif; ?>
 </div></nav>
 <?php
@@ -111,7 +128,8 @@ function card($a) { ?>
         <?php if ($a['image']): ?><img src="<?= e($a['image']) ?>" loading="lazy" alt="<?= e($a['image_alt'] ?: $a['title']) ?>"><?php else: ?><div class="ph"></div><?php endif; ?>
     </a>
     <div class="card-body">
-        <span class="cat"><a href="/kategori/<?= e(slugify($a['source_site'])) ?>"><?= e($a['source_site'] ?: 'Baca') ?></a></span>
+        <?php $c = $a['category'] ?: $a['source_site']; ?>
+        <span class="cat"><a href="/kategori/<?= e(slugify($c)) ?>"><?= e($c ?: 'Baca') ?></a></span>
         <h3><a href="<?= e(article_url($a['slug'])) ?>"><?= e($a['title']) ?></a></h3>
         <p><?= e(truncate($a['excerpt'] ?: strip_tags($a['body']), 120)) ?></p>
         <time><?= time_ago($a['published_at']) ?></time>
@@ -136,13 +154,14 @@ function render_article_or_404($slug) {
     $desc  = $a['meta_desc'] ?: truncate($a['excerpt'] ?: strip_tags($a['body']), 158);
     $url   = article_url($a['slug']);
     $img   = $a['image'] ?: BASE_URL . '/assets/img/placeholder.svg';
-    $catUrl = '/kategori/' . slugify($a['source_site']);
+    $catName = $a['category'] ?: ($a['source_site'] ?: 'Kategori');
+    $catUrl = '/kategori/' . slugify($catName);
 
     $schema  = article_schema($a);
     if (!empty($a['faq_json'])) { $schema .= '\n' . $a['faq_json']; }
     $schema .= '\n' . breadcrumb_schema([
         ['name' => 'Beranda', 'url' => BASE_URL . '/'],
-        ['name' => $a['source_site'] ?: 'Kategori', 'url' => BASE_URL . $catUrl],
+        ['name' => $catName, 'url' => BASE_URL . $catUrl],
         ['name' => $a['title'], 'url' => $url],
     ]);
 
@@ -150,7 +169,7 @@ function render_article_or_404($slug) {
     site_nav(true);
     ?>
 <main class="container">
-  <div class="breadcrumb"><a href="/">Beranda</a> / <a href="<?= e($catUrl) ?>"><?= e($a['source_site'] ?: 'Kategori') ?></a> / <span><?= e($a['title']) ?></span></div>
+  <div class="breadcrumb"><a href="/">Beranda</a> / <a href="<?= e($catUrl) ?>"><?= e($catName) ?></a> / <span><?= e($a['title']) ?></span></div>
   <article class="article">
     <h1><?= e($a['title']) ?></h1>
     <div class="meta">
@@ -171,7 +190,7 @@ function render_article_or_404($slug) {
   <section class="related">
     <h2>Berita Terkait</h2>
     <div class="grid">
-      <?php foreach (related_articles($a['source_site'], $a['id']) as $rel): card($rel); endforeach; ?>
+      <?php foreach (related_articles($a['source_site'], $a['id'], 4, $a['category'] ?: null) as $rel): card($rel); endforeach; ?>
     </div>
   </section>
 </main>
@@ -191,8 +210,8 @@ function render_listing($type, $slug = null, $page = null, $perPage = 12, $is404
     // Build base query per type
     if ($type === 'category' && $slug) {
         $catName = ucwords(str_replace('-', ' ', $slug));
-        $where = "source_site LIKE ? AND status='published'";
-        $params = ['%' . str_replace('-', ' ', $slug) . '%'];
+        $where = "category = ? AND status='published'";
+        $params = [str_replace('-', ' ', $slug)];
         $baseUrl = BASE_URL . '/kategori/' . rawurlencode($slug);
         $title = $catName . ' - ' . $siteName;
         $desc  = 'Kumpulan berita terbaru dari kategori ' . $catName . ' di ' . $siteName . '.';

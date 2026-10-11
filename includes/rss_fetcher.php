@@ -67,6 +67,18 @@ function normalize_item($item, $sourceTitle, $sourceId, $lang, $isAtom = false) 
     $date = $dateRaw ? strtotime($dateRaw) : time();
     if (!$date) $date = time();
 
+    // Extract topic category from RSS (<category>) if present
+    $category = '';
+    if ($isAtom) {
+        $category = (string)($item->category ?? '');
+    } else {
+        $category = xml_cdata($item->category);
+    }
+    if ($category && stripos($category, '|') !== false) {
+        $category = trim(explode('|', $category)[0]);   // "Berita|Nasional" -> "Berita"
+    }
+    $category = mb_substr(trim($category), 0, 100);
+
     // Strip html remnants in description
     $desc = trim(preg_replace('/\s+/u', ' ', $desc));
 
@@ -79,6 +91,7 @@ function normalize_item($item, $sourceTitle, $sourceId, $lang, $isAtom = false) 
         'source_site' => $sourceTitle,
         'source_id'   => $sourceId,
         'lang'        => $lang,
+        'category'    => $category,
         'date'        => date('Y-m-d H:i:s', $date),
     ];
 }
