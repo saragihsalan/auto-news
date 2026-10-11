@@ -1,0 +1,58 @@
+:root { --bg:#f1f5f9; --sidebar:#0f172a; --accent:#e11d48; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); }
+a { color:inherit; text-decoration:none; }
+
+.admin-wrap { display:flex; min-height:100vh; }
+.sidebar { width:230px; background:var(--sidebar); color:#e2e8f0; padding:20px 14px; flex-shrink:0; }
+.sidebar .brand { font-size:1.1rem; font-weight:800; padding:8px 10px 24px; color:#fff; }
+.sidebar nav a { display:block; padding:11px 10px; border-radius:9px; margin-bottom:6px; font-size:.92rem; }
+.sidebar nav a:hover { background:rgba(255,255,255,.08); color:#fff; }
+.main { flex:1; padding:24px 30px; }
+.topbar h1 { margin:0 0 20px; font-size:1.5rem; }
+
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px; margin-bottom:22px; }
+.stat { background:#fff; border-radius:12px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+.stat span { font-size:1.6rem; font-weight:800; display:block; }
+.stat label { color:var(--muted); font-size:.85rem; }
+
+.card { background:#fff; border-radius:12px; padding:20px; box-shadow:0 1px 3px rgba(0,0,0,.06); margin-bottom:18px; }
+.card h2 { margin:0 0 16px; font-size:1.1rem; }
+
+.table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+.table th, .table td { text-align:left; padding:11px 14px; border-bottom:1px solid var(--border); font-size:.9rem; }
+.table th { background:#f8fafc; color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; }
+.table .small { font-size:.8rem; color:var(--muted); }
+
+.badge { padding:3px 10px; border-radius:999px; font-size:.75rem; font-weight:700; }
+.b-published { background:#dcfce7; color:#15803d; }
+.b-draft { background:#fef9c3; color:#a16207; }
+.b-trash { background:#fee2e2; color:#b91c1c; }
+
+.form { max-width:640px; }
+.form label { display:block; margin:14px 0 5px; font-weight:600; font-size:.88rem; }
+.form input, .form select, .form textarea {
+  width:100%; padding:10px 13px; border:1px solid var(--border); border-radius:9px; font-size:.95rem;
+}
+.form input:focus { outline:2px solid var(--accent); border-color:transparent; }
+.form small { color:var(--muted); font-size:.8rem; display:block; margin-top:4px; }
+.form h2 { font-size:1.05rem; margin:26px 0 4px; border-bottom:1px solid var(--border); padding-bottom:8px; color:#334155; }
+.form button, .card button { background:var(--accent); color:#fff; border:none; padding:11px 20px; border-radius:9px; font-weight:700; cursor:pointer; margin-top:20px; font-size:.95rem; }
+.form-inline { display:flex; gap:10px; flex-wrap:wrap; }
+.form-inline input, .form-inline select { width:auto; }
+
+.flash { background:#dcfce7; color:#15803d; padding:12px 16px; border-radius:10px; margin-bottom:18px; font-weight:600; }
+.err { background:#fee2e2; color:#b91c1c; padding:10px 14px; border-radius:9px; margin-bottom:16px; font-size:.9rem; }
+.pre { background:#0f172a; color:#e2e8f0; padding:16px; border-radius:10px; font-size:.8rem; overflow:auto; max-height:400px; white-space:pre-wrap; }
+
+.btn-on { background:#dcfce7; color:#15803d; border:none; padding:6px 12px; border-radius:7px; cursor:pointer; font-weight:600; }
+.btn-off { background:#e2e8f0; color:#475569; border:none; padding:6px 12px; border-radius:7px; cursor:pointer; }
+.btn-del { background:transparent; border:none; cursor:pointer; font-size:1.1rem; }
+.btn-star { background:transparent; border:none; cursor:pointer; font-size:1.2rem; color:#f59e0b; }
+
+.login-body { display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(135deg,#0f172a,#1e293b); }
+.login-box { background:#fff; padding:36px; border-radius:16px; width:360px; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+.login-box h1 { margin:0 0 20px; font-size:1.3rem; text-align:center; }
+.login-box label { display:block; margin:12px 0 5px; font-size:.85rem; font-weight:600; }
+.login-box input { width:100%; padding:11px; border:1px solid var(--border); border-radius:9px; }
+.login-box button { width:100%; background:var(--accent); color:#fff; border:none; padding:12px; border-radius:9px; font-weight:700; cursor:pointer; margin-top:20px; }

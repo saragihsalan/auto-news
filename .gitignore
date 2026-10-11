@@ -1,0 +1,15 @@
+# ---- Sensitive / local-only config (never commit real credentials) ----
+/includes/config.php
+
+# ---- Generated runtime files ----
+/sitemap.xml
+/robots.txt
+/cache/
+/logs/
+
+# ---- OS / editor noise ----
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
