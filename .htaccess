@@ -5,8 +5,8 @@ Options -Indexes -MultiViews
 RewriteEngine On
 RewriteBase /
 
-# Block private dirs
-RewriteRule ^(admin|includes|cron|assets/logs)/ - [F,L]
+# Block private dirs (admin is allowed - it is the control panel and must be reachable)
+RewriteRule ^(includes|cron|assets/logs)/ - [F,L]
 
 # Pretty URLs: everything that isn't a real file/dir => index.php
 RewriteCond %{REQUEST_FILENAME} !-f
